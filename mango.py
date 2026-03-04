@@ -22,8 +22,14 @@ def get_users():
 @app.route('/users', methods=['POST'])
 def add_user():
     data = request.json
-    collection.insert_one(data)
-    return jsonify({"message": "User added successfully"}), 201
+    if isinstance(data, list):
+        collection.insert_many(data)
+        return jsonify({"message": "Multiple users added"}), 201
+
+    # If single object → insert one
+    else:
+        collection.insert_one(data)
+        return jsonify({"message": "User added"}), 201
 
 if __name__ == '__main__':
     app.run(debug=True)
